@@ -1,0 +1,44 @@
+html,
+    body,
+    #map-canvas {
+        /* border:solid 1px; */
+        height: 100%;
+        width: 100%;
+        margin: 0px;
+        padding: 0px;
+        position: absolute;
+        /* right: -10px; */
+        top: 30px;
+    }
+    .rain{
+        /* border:solid 1px; */
+        height: 100vh;
+        background: url(rain.png);
+        background-color: rgba(105,105,105,0.4);
+        animation: rain .3s linear infinite;
+        z-index: 5;
+        position: relative;
+    }
+    .rain:before{
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background:#fff;
+        animation: lighting .3s linear infinite;
+        opacity: 0;
+    }
+    .sunny.before{
+        position: absolute;
+    }
+    .cloudy.before{
+        position: absolute;
+    }
+    @keyframes rain{
+        0%{
+            background-position: 0% 0%;
+        }
+        100%{
+            background-position: 100% 100%;
+        }
+    }

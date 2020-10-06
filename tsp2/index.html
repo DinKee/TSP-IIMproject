@@ -1,0 +1,86 @@
+
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAEKi_p5fpCCHF9PjaNxb6PrcE50Eh7xpQ"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+<body>
+    <div id="map-control">
+        <button id="nearest" onclick="requestUrl='nearest.json';drawMap();">Nearest</button>
+        <button id="opt_2" onclick="requestUrl='opt_2.json';drawMap();">opt_2</button>
+        <button id="opt_3" onclick="requestUrl='opt_3.json';drawMap();">opt_3</button>
+        <button id="sa" onclick="requestUrl='path.json';drawMap();">sa</button>
+    </div>
+    <div class="rain"></div>
+    <!-- <div class="sunny"></div>
+    <div class="cloudy"></div> -->
+    <div id="map-canvas"></div>
+    
+    <script>
+        var requestUrl = 'path.json';
+        var lineCoordinatesArray = [];
+        var markers = [];
+
+        window.onload = function() {
+            jQuery.support.cors = true;
+            drawMap();
+        }
+
+        var drawMap = function() {
+            var request = new XMLHttpRequest();
+            request.open('GET', requestUrl, true);
+            request.onload = function() {
+                if (request.status >= 200 && request.status < 400) {
+                    var point = {};
+                    point = JSON.parse(request.responseText);
+
+                    lineCoordinatesArray = [];
+                    markers = [];
+                    var g_point=[0,0];
+
+                    for (var i = 0; i < point.length; i++) {
+                        temp={lat:parseFloat(point[i].lat),lng:parseFloat(point[i].lng)};
+                        g_point[0]=g_point[0]+temp.lat/point.length;
+                        g_point[1]=g_point[1]+temp.lng/point.length;
+                        addMarkerWithTimeout(temp, i * 70);
+                    }
+
+                    map = new google.maps.Map(document.getElementById('map-canvas'), {
+                        zoom: 14.5,
+                        center: {
+                            lat: g_point[0],
+                            lng: g_point[1],
+                            alt: 100
+                        }
+                    });
+                }
+            };
+            request.send();
+        };
+
+        var addMarkerWithTimeout = function(position, timeout) {
+            window.setTimeout(function() {
+                markers.push(new google.maps.Marker({
+                    position: position,
+                    map: map,
+                    animation: google.maps.Animation.DROP
+                }));
+
+                lineCoordinatesArray.push(position);
+                var lineCoordinatesPath = new google.maps.Polyline({
+                    path: lineCoordinatesArray,
+                    geodesic: true,
+                    strokeColor: '#2E10FF',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                });
+                lineCoordinatesPath.setMap(map);
+            }, timeout);
+        };
+
+        
+    </script>
+</body>
